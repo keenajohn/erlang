@@ -151,11 +151,11 @@ combine_entries([{WORD_A, PAGES_A}|[{WORD_B, PAGES_B}|ENTRIES]]) ->
             [{WORD_A, pages_to_ranges(lists:sort(PAGES_A))}|combine_entries([{WORD_B, PAGES_B}|ENTRIES])]
     end.
 
-% convert a list of page numbers to a list of page ranges
+% convert a list of line numbers to a list of line ranges
 % [1,1,2,2,4,4,5,5,5,5,7,7] -> [[1,2],[4,5],[7,7]]
-pages_to_ranges(PAGES) ->
-    SORTED_PAGES = lists:usort(PAGES),
-    get_ranges(SORTED_PAGES).
+pages_to_ranges(LINES) ->
+    SORTED_LINES = lists:usort(LINES),
+    get_ranges(SORTED_LINES).
 
 get_ranges([]) ->
     [];
@@ -166,18 +166,18 @@ get_ranges([X|Xs]) ->
     {_LIST1,LIST2}=lists:partition(fun(PAGE) -> PAGE =< lists:nth(2,FIRST_RANGE) end, Xs),
     [FIRST_RANGE|get_ranges(LIST2)].
 
-% Given a an ordered list of page numbers, return the first range.
-get_range(PAGES) ->
-    get_range(hd(PAGES), tl(PAGES)).
+% Given a an ordered list of line numbers, return the first range.
+get_range(LINES) ->
+    get_range(hd(LINES), tl(LINES)).
     
 get_range([], _) ->
     [];
 get_range(RANGE_START, []) ->
     [RANGE_START, RANGE_START];
-get_range(RANGE_START, [PAGE|PAGEs]) ->
-    case (PAGE - RANGE_START) > 1 of
+get_range(RANGE_START, [LINE|LINEs]) ->
+    case (LINE - RANGE_START) > 1 of
         true ->
             [RANGE_START, RANGE_START];
         false ->
-            [RANGE_START | tl(get_range(PAGE, PAGEs))]
+            [RANGE_START | tl(get_range(LINE, LINEs))]
     end.
